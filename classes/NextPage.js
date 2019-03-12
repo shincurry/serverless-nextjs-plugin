@@ -26,6 +26,17 @@ class NextPage {
     return path.join(dir, this.pageName + ".render");
   }
 
+  get packageInclude() {
+    return [
+      path.join('./', this.pagePath)
+    ]
+  }
+
+  get httpPath() {
+    const httpPath = this.pagePath.replace('sls-next-build/', '').replace('.js', '')
+    return httpPath === "index" ? "/" : httpPath
+  }
+
   get functionName() {
     return this.pageName + "Page";
   }
@@ -34,10 +45,13 @@ class NextPage {
     return {
       [this.functionName]: {
         handler: this.pageHandler,
+        package: {
+          include: this.packageInclude,
+        },
         events: [
           {
             http: {
-              path: this.pageName === "index" ? "/" : this.pageName,
+              path: this.httpPath,
               method: "get"
             }
           }
